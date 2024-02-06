@@ -33,7 +33,9 @@ def generate_stability_image(
         ):
     
     """
-    Generate images from Stable Diffusion
+    Generate images from Stable Diffusion.
+
+    https://platform.stability.ai/docs/api-reference#tag/v1generation/operation/textToImage
     """
     timestamp = datetime.now().strftime("%Y-%m-%d_%H%M")
     
