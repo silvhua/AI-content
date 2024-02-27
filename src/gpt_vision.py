@@ -1,6 +1,8 @@
-from  openai import OpenAI
+from openai import OpenAI
 from datetime import datetime
-import sys
+import sys, os
+import IPython
+
 def generate_completion(
     image_url, history, user_input=None,  n_choices=1,
     max_tokens=300, temperature=0.0, model="gpt-4-vision-preview"
@@ -41,7 +43,9 @@ def generate_completion(
             "role": "user",
             "content": user_input
         }]
-    client = OpenAI()
+    client = OpenAI(
+        organization=os.environ['openai_organization']
+        )
     if (n_choices > 1) & (temperature == 0):
         temperature = 0.7
     try:
@@ -84,3 +88,22 @@ def generate_completion(
         filename = f.f_code.co_filename
         print("An error occurred on line", lineno, "in", filename, ":", error)
         return response
+
+def openai_models(env="openai_api_key", organization_key='openai_organization', query='gpt'):
+    """
+    List the availabel OpenAI models.
+    Parameters:
+        - env (str): Name of environmental variable storing the OpenAI API key.
+        - query (str): Search term for filtering models.
+    """
+    client = OpenAI(
+        api_key=os.environ[env],
+        organization=os.environ[organization_key]
+    )
+    # openai.api_key = os.getenv(env)
+    response = client.models.list()
+    filtered_models = [model for model in response.data if model.id.find(query) != -1]
+
+    for item in filtered_models:
+        print(item.id)
+    return filtered_models
